@@ -1,6 +1,6 @@
 {
   "name": "pino-coralogix",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Pino transport for sending logs to Coralogix",
   "main": "src/index.js",
   "type": "module",
