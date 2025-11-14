@@ -114,3 +114,4 @@ async function buildTransport(opts) {
 }
 
 export { buildTransport as build };
+export default buildTransport;
