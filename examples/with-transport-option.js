@@ -6,9 +6,9 @@ const logger = pino({
   transport: {
     target: '../src/index.js',
     options: {
-      domain: 'us1',
+      domain: process.env.CORALOGIX_DOMAIN || 'us1', // or us2, eu1, eu2, ap1, ap2, ap3
       apiKey: process.env.CORALOGIX_API_KEY || 'your-api-key',
-      applicationName: 'my-application',
+      applicationName: process.env.CORALOGIX_APP_NAME || 'my-application',
       subsystemName: 'my-service',
       // Optional settings
       batchSize: 100,
@@ -31,15 +31,4 @@ logger.info({
   methodName: 'createUser'
 }, 'New user created');
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  logger.info('Shutting down gracefully');
-  logger.flush();
-  setTimeout(() => process.exit(0), 1000);
-});
-
-// Keep the process running for demo
-setTimeout(() => {
-  logger.info('Demo complete');
-  process.exit(0);
-}, 3000);
+// No need to wait for flushing here, as Pino handles it internally
