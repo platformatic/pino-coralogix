@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "test": "node --test test/**/*.test.js",
-    "test:watch": "node --test --watch test/**/*.test.js"
+    "test:watch": "node --test --watch test/**/*.test.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "keywords": [
     "pino",
@@ -29,5 +31,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/yourusername/pino-coralogix.git"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.1",
+    "neostandard": "^0.12.2"
   }
 }

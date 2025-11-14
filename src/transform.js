@@ -10,7 +10,7 @@ const LEVEL_TO_SEVERITY = {
   40: 4, // warn -> warn
   50: 5, // error -> error
   60: 6  // fatal -> critical
-};
+}
 
 /**
  * Transforms a Pino log object to Coralogix log format
@@ -18,37 +18,37 @@ const LEVEL_TO_SEVERITY = {
  * @param {Object} config - Transport configuration
  * @returns {Object} Coralogix log object
  */
-export function transformLog(pinoLog, config) {
+export function transformLog (pinoLog, config) {
   const coralogixLog = {
     timestamp: pinoLog.time,
     applicationName: config.applicationName,
     subsystemName: config.subsystemName,
     severity: LEVEL_TO_SEVERITY[pinoLog.level] || 3, // Default to Info
     text: formatMessage(pinoLog.msg)
-  };
+  }
 
   // Add computerName (prefer config, fallback to hostname from log)
   if (config.computerName) {
-    coralogixLog.computerName = config.computerName;
+    coralogixLog.computerName = config.computerName
   } else if (pinoLog.hostname) {
-    coralogixLog.computerName = pinoLog.hostname;
+    coralogixLog.computerName = pinoLog.hostname
   }
 
   // Add optional Coralogix-specific fields if present in the log
   if (pinoLog.category) {
-    coralogixLog.category = pinoLog.category;
+    coralogixLog.category = pinoLog.category
   }
   if (pinoLog.className) {
-    coralogixLog.className = pinoLog.className;
+    coralogixLog.className = pinoLog.className
   }
   if (pinoLog.methodName) {
-    coralogixLog.methodName = pinoLog.methodName;
+    coralogixLog.methodName = pinoLog.methodName
   }
   if (pinoLog.threadId) {
-    coralogixLog.threadId = pinoLog.threadId;
+    coralogixLog.threadId = pinoLog.threadId
   }
 
-  return coralogixLog;
+  return coralogixLog
 }
 
 /**
@@ -56,15 +56,15 @@ export function transformLog(pinoLog, config) {
  * @param {*} msg - The message to format
  * @returns {string} Formatted message
  */
-function formatMessage(msg) {
+function formatMessage (msg) {
   if (msg === undefined || msg === null) {
-    return '';
+    return ''
   }
   if (typeof msg === 'string') {
-    return msg;
+    return msg
   }
   if (typeof msg === 'object') {
-    return JSON.stringify(msg);
+    return JSON.stringify(msg)
   }
-  return String(msg);
+  return String(msg)
 }

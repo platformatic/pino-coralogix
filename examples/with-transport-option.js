@@ -1,4 +1,4 @@
-import pino from 'pino';
+import pino from 'pino'
 
 // Using Pino's transport option to load the Coralogix transport
 // This is useful when you want to configure the transport inline
@@ -16,19 +16,19 @@ const logger = pino({
       timeout: 30000
     }
   }
-});
+})
 
 // Now you can use the logger
-logger.info('Application started with transport option');
-logger.debug('Debug message');
-logger.warn({ userId: 123 }, 'User action warning');
-logger.error(new Error('Something went wrong'), 'Error occurred');
+logger.info('Application started with transport option')
+logger.debug('Debug message')
+logger.warn({ userId: 123 }, 'User action warning')
+logger.error(new Error('Something went wrong'), 'Error occurred')
 
 // Log with custom Coralogix fields
 logger.info({
   category: 'api',
   className: 'UserController',
   methodName: 'createUser'
-}, 'New user created');
+}, 'New user created')
 
 // No need to wait for flushing here, as Pino handles it internally

@@ -1,7 +1,7 @@
-import pino from 'pino';
-import { build } from '../src/index.js';
+import pino from 'pino'
+import { build } from '../src/index.js'
 
-async function main() {
+async function main () {
   // Create the Coralogix transport
   const transport = await build({
     domain: 'us1', // or us2, eu1, eu2, ap1, ap2, ap3
@@ -12,36 +12,36 @@ async function main() {
     batchSize: 100,          // Number of logs before flushing
     flushInterval: 1000,     // Flush every 1 second
     timeout: 30000          // Request timeout in milliseconds
-  });
+  })
 
   // Create a Pino logger with the transport
-  const logger = pino(transport);
+  const logger = pino(transport)
 
   // Log some messages
-  logger.info('Application started');
-  logger.debug('This is a debug message');
-  logger.warn('This is a warning');
-  logger.error('This is an error');
+  logger.info('Application started')
+  logger.debug('This is a debug message')
+  logger.warn('This is a warning')
+  logger.error('This is an error')
 
   // Log with custom fields
   logger.info({
     category: 'authentication',
     className: 'AuthService',
     methodName: 'login'
-  }, 'User logged in successfully');
+  }, 'User logged in successfully')
 
   // Give time for logs to flush
-  await new Promise(resolve => setTimeout(resolve, 2000));
+  await new Promise(resolve => setTimeout(resolve, 2000))
 
   // Close the logger
   await new Promise((resolve) => {
     logger.flush(() => {
       transport.end(() => {
-        console.log('All logs sent to Coralogix');
-        resolve();
-      });
-    });
-  });
+        console.log('All logs sent to Coralogix')
+        resolve()
+      })
+    })
+  })
 }
 
-main().catch(console.error);
+main().catch(console.error)
