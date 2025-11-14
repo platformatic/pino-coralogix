@@ -1,6 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import { build } from '../src/index.js';
+import buildDefault from '../src/index.js';
 
 describe('Transport Initialization', () => {
   it('should create transport with valid configuration', async () => {
@@ -130,5 +131,23 @@ describe('Transport Initialization', () => {
 
     const transport = await build(config);
     assert.ok(transport, 'Transport should be created with custom config');
+  });
+
+  it('should export default function for Pino transport option', async () => {
+    assert.strictEqual(typeof buildDefault, 'function', 'Default export should be a function');
+
+    const config = {
+      domain: 'us1',
+      apiKey: 'test-api-key',
+      applicationName: 'test-app',
+      subsystemName: 'test-subsystem'
+    };
+
+    const transport = await buildDefault(config);
+    assert.ok(transport, 'Transport should be created via default export');
+  });
+
+  it('should have default export equal to named export', () => {
+    assert.strictEqual(buildDefault, build, 'Default export should be the same as named export');
   });
 });
