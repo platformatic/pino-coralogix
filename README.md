@@ -85,6 +85,30 @@ logger.warn({ userId: 123 }, 'User session expired');
 logger.error(new Error('Connection failed'), 'Database error');
 ```
 
+### Using Pino's Transport Option
+
+You can also use Pino's built-in transport configuration:
+
+```javascript
+import pino from 'pino';
+
+const logger = pino({
+  transport: {
+    target: 'pino-coralogix',
+    options: {
+      domain: 'us1',
+      apiKey: process.env.CORALOGIX_API_KEY,
+      applicationName: 'my-app',
+      subsystemName: 'api-service',
+      batchSize: 100,
+      flushInterval: 1000
+    }
+  }
+});
+
+logger.info('Hello Coralogix!');
+```
+
 ### With Custom Fields
 
 Coralogix supports additional fields for better log organization:
