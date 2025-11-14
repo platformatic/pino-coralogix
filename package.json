@@ -1,0 +1,33 @@
+{
+  "name": "pino-coralogix",
+  "version": "0.0.1",
+  "description": "Pino transport for sending logs to Coralogix",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/**/*.test.js",
+    "test:watch": "node --test --watch test/**/*.test.js"
+  },
+  "keywords": [
+    "pino",
+    "transport",
+    "coralogix",
+    "logging",
+    "log",
+    "logger"
+  ],
+  "author": "",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "pino": "^9.5.0",
+    "pino-abstract-transport": "^2.0.0",
+    "undici": "^7.0.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/pino-coralogix.git"
+  }
+}
