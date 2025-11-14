@@ -4,6 +4,7 @@ A [Pino](https://getpino.io) transport for sending logs to [Coralogix](https://c
 
 ## Features
 
+- ⚡ **Worker Thread Support**: Runs in separate thread via Pino's transport option (recommended)
 - ✅ **TDD Approach**: Built using Test-Driven Development with 54 tests
 - 🚀 **Efficient Batching**: Automatically batches logs to minimize network calls
 - 🔄 **Auto-flush**: Configurable batch size and time-based flushing
@@ -23,18 +24,19 @@ npm install pino-coralogix
 
 ```javascript
 import pino from 'pino';
-import { build } from 'pino-coralogix';
 
-// Create the Coralogix transport
-const transport = await build({
-  domain: 'us1',
-  apiKey: process.env.CORALOGIX_API_KEY,
-  applicationName: 'my-app',
-  subsystemName: 'api-service'
+// Create logger with Coralogix transport (runs in separate worker thread)
+const logger = pino({
+  transport: {
+    target: 'pino-coralogix',
+    options: {
+      domain: 'us1',
+      apiKey: process.env.CORALOGIX_API_KEY,
+      applicationName: 'my-app',
+      subsystemName: 'api-service'
+    }
+  }
 });
-
-// Create logger
-const logger = pino(transport);
 
 // Start logging
 logger.info('Hello Coralogix!');
@@ -65,29 +67,9 @@ logger.info('Hello Coralogix!');
 
 ## Usage Examples
 
-### Basic Usage
+### Recommended: Using Transport Option (Separate Worker Thread)
 
-```javascript
-import pino from 'pino';
-import { build } from 'pino-coralogix';
-
-const transport = await build({
-  domain: 'us1',
-  apiKey: process.env.CORALOGIX_API_KEY,
-  applicationName: 'my-app',
-  subsystemName: 'api-service'
-});
-
-const logger = pino(transport);
-
-logger.info('Application started');
-logger.warn({ userId: 123 }, 'User session expired');
-logger.error(new Error('Connection failed'), 'Database error');
-```
-
-### Using Pino's Transport Option
-
-You can also use Pino's built-in transport configuration:
+This is the **preferred method** as it runs the transport in a separate worker thread, keeping your main application thread free from I/O operations:
 
 ```javascript
 import pino from 'pino';
@@ -106,8 +88,32 @@ const logger = pino({
   }
 });
 
+logger.info('Application started');
+logger.warn({ userId: 123 }, 'User session expired');
+logger.error(new Error('Connection failed'), 'Database error');
+```
+
+### Alternative: Direct Transport Usage (Same Thread)
+
+For special cases where you need direct control over the transport:
+
+```javascript
+import pino from 'pino';
+import { build } from 'pino-coralogix';
+
+const transport = await build({
+  domain: 'us1',
+  apiKey: process.env.CORALOGIX_API_KEY,
+  applicationName: 'my-app',
+  subsystemName: 'api-service'
+});
+
+const logger = pino(transport);
+
 logger.info('Hello Coralogix!');
 ```
+
+> **Note**: This method runs in the same thread as your application and may impact performance under high log volume.
 
 ### With Custom Fields
 
@@ -184,11 +190,20 @@ Pino levels are automatically mapped to Coralogix severity levels:
 
 ## How It Works
 
-1. **Streaming**: Pino writes JSON logs to the transport stream
-2. **Transformation**: Each log is transformed to Coralogix format
-3. **Batching**: Logs accumulate in memory until batch size or time threshold
-4. **Flushing**: Batches are sent to Coralogix via HTTP POST
-5. **Auto-flush**: Remaining logs are flushed on stream end
+1. **Worker Thread** (when using transport option): Pino spawns a worker thread for the transport
+2. **Streaming**: Pino writes JSON logs to the transport stream
+3. **Transformation**: Each log is transformed to Coralogix format
+4. **Batching**: Logs accumulate in memory until batch size or time threshold
+5. **Flushing**: Batches are sent to Coralogix via HTTP POST
+6. **Auto-flush**: Remaining logs are flushed on stream end
+
+### Why Use Worker Thread?
+
+Using Pino's `transport` option runs the transport in a separate worker thread, which:
+- ✅ Keeps your main application thread free from I/O blocking
+- ✅ Prevents HTTP requests from impacting application performance
+- ✅ Allows logs to be processed asynchronously without backpressure
+- ✅ Is the **recommended pattern** for production use
 
 ### Batching Strategy
 
